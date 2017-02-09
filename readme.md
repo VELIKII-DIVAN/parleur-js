@@ -71,3 +71,24 @@ parser.end();
 Notice that we have added a `Parser.end()` call. This makes sure that we have parsed all the input text. If we did not make this call our parser would accept strings like `var a = 5 thisisnotsupposedtobehere`. That pretty much wraps it up for basic usage, now go and build your own great, big, complex parser!
 
 *If you don't feel like copy-pasting this code, the code from the tutorial can be found and tried out in examples/var.html*
+
+## Running the Examples
+To run the examples you will need to run a development server from the root directory of this repository. One possibility is to use PHP, which you can start with
+```
+$ php -S 127.0.0.1:8080
+```
+You can then find the example you're look for by going to *127.0.0.1:8080/examples/someExample.html*
+
+## Contributing
+Everyone is welcome to contribute! The source code is very simple. The framework and basic API is up and running, so now we only need to add more primitive parse rules. Some suggestions are:
+
+- [ ] Character
+- [x] Whitespace
+- [x] String
+- [ ] Integer
+- [ ] Double
+- [x] Regex
+- [ ] Multiple instances of a rule
+- [ ] List of a rule with separator
+- [ ] One of several possible rules
+- [ ] A rule enclosed in parenteses or other delimiters
