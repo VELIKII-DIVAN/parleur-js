@@ -1,0 +1,53 @@
+<html>
+<head>
+  <script type="text/javascript" src="../source/simpleparser.js"></script>  
+</head>
+<body>
+  <p>
+   	The example follows the tutorial found in <i>readme.md</i>. It parses expressions like <code>var foo = 42</code>. 
+  </p>
+
+  <input id="inputText" type="text" value="var foo = 42" oninput="parseText()"/>
+
+  <p id="result"/>
+</body>
+
+<script>
+
+function parseVar(parser) {
+  if (parser.failure()) return undefined;
+
+  parser.string("var ");
+  var name = parser.regex("[a-zA-Z]+");
+  parser.string(" = ");
+  var value = parser.regex("(0|[1-9][0-9]*)");
+
+  if (parser.success()) {
+    return { name: name, value: parseInt(value) };
+  }
+
+  parser.fail("Failed to parse variable assignment");
+  return undefined;
+}
+
+function parseText() {
+  var inputElem = document.getElementById("inputText");
+  var resultElem = document.getElementById("result"); 
+
+  var parser = new SimpleParser.Parser(inputElem.value);
+  parseVar(parser);
+
+  // Check that we parsed all the text.
+  parser.end();
+
+  if (parser.success()) {
+    resultElem.innerText = "Success!";
+  }
+  else {
+    resultElem.innerText = "Failure:\n" + parser.errorMessage();
+  }
+}
+
+parseText();
+
+</script>
