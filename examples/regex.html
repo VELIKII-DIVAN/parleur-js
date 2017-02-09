@@ -1,0 +1,49 @@
+<html>
+<head>
+  <script type="text/javascript" src="../source/simpleparser.js"></script>  
+</head>
+<body>
+  <p>
+  This example uses <code>Parser.regex(pattern)</code> to parse strings like "foo", "fooooo" and "foooooooo".
+  </p>
+  <input id="inputText" type="text" value="foo" oninput="parseText()"/>
+  <p id="result"/>
+</body>
+
+<script>
+
+function parseFoo(parser) {
+  if (parser.failure()) return undefined;
+
+  var value = parser.regex("foo+");
+
+  if (parser.success()) {
+    return value;
+  }
+
+  parser.fail("Failed to parse foo-like string");
+}
+
+function parseText() {
+  var inputElem = document.getElementById("inputText");
+  var resultElem = document.getElementById("result"); 
+
+  var parser = new SimpleParser.Parser(inputElem.value);
+  parseFoo(parser);
+
+  // Check that we parsed all the text.
+  parser.end();
+
+  if (parser.success()) {
+    resultElem.innerText = "Success!";
+  }
+  else {
+    resultElem.innerText = "Failure:\n" + parser.errorMessage();
+  }
+}
+
+parseText();
+
+</script>
+
+</html>

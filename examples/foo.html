@@ -1,0 +1,52 @@
+<html>
+<head>
+  <script type="text/javascript" src="../source/simpleparser.js"></script>  
+</head>
+<body>
+  <p>
+    This example uses <code>Parser.string(string)</code> to parse "foo".</p>
+
+  <input id="inputText" type="text" value="foo" oninput="parseText()"/>
+
+  <p id="result"/>
+</body>
+
+<script>
+
+function parseSomething(parser) {
+  if (parser.failure()) return undefined;
+
+  // Your parser calls go here.
+  var value = parser.string("foo");
+
+  if (parser.success()) {
+    // You assemble and return your value here.
+    return value;
+  }
+
+  parser.fail("Failed to parse 'foo' string");
+}
+
+function parseText() {
+  var inputElem = document.getElementById("inputText");
+  var resultElem = document.getElementById("result"); 
+
+  var parser = new SimpleParser.Parser(inputElem.value);
+  parseSomething(parser);
+
+  // Check that we parsed all the text.
+  parser.end();
+
+  if (parser.success()) {
+    resultElem.innerText = "Success!";
+  }
+  else {
+    resultElem.innerText = "Failure:\n" + parser.errorMessage();
+  }
+}
+
+parseText();
+
+</script>
+
+</html>
