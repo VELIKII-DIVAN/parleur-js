@@ -17,12 +17,12 @@ function parseVar(parser) {
   
   // 2. Calls to other parser rules.
   
-  if (Parser.success()) {
+  if (parser.success()) {
      // 3. Assembly and return of result value.
   }
   
   // 4. Optional descriptive error message
-  Parser.fail("Failed to parse variable assignment");
+  parser.fail("Failed to parse variable assignment");
   // 5. Return undefined
   return undefined;
 }
@@ -51,11 +51,11 @@ function parseVar(parser) {
   parser.string(" = ");
   var value = parser.regex("(0|[1-9][0-9]*)");
   
-  if (Parser.success()) {
+  if (parser.success()) {
     return { name: name, value: parseInt(value) };
   }
   
-  Parser.fail("Failed to parse variable assignment");
+  parser.fail("Failed to parse variable assignment");
   return undefined;
 }
 ```
