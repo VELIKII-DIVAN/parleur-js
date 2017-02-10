@@ -2,14 +2,14 @@
 A JavaScript library for build text parsers. Implements the class *SimpleParser* which offers parser primitives, which allow you to build more complex rules. 
 
 ## Tutorial
-In this short tutorial we're going to build a parser rule which parses expression like `var foo = 42`. First we should create a parser instance
+In this short tutorial we're going to build a parse rule which parses expression like `var foo = 42`. First we should create a parser instance
 ```javascript
 var textToParse = "var foo = 42";
 var parser = new SimpleParser.Parser(textToParse);
 ```
 Make sure that you have included *simpleparser.js* in your html document.
 
-Next we create the skeleton for our parser rule. A parser rule is simply a function which takes a `SimpleParser.Parser` instance as its only argument. This looks like
+Next we create the skeleton for our parser rule. A parse rule is simply a function which takes a `SimpleParser.Parser` instance as its only argument. This looks like
 ```javascript
 function parseVar(parser) {
   // 1. Optional check that we have not already failed.
@@ -49,7 +49,7 @@ function parseVar(parser) {
   parser.string("var ");
   var name = parser.regex("[a-zA-Z]+");
   parser.string(" = ");
-  var value = parser.integer()");
+  var value = parser.integer();
   
   if (parser.success()) {
     return { name: name, value: value };
