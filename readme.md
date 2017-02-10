@@ -114,7 +114,7 @@ Everyone is welcome to contribute! The source code is very simple. The framework
 - [x] Whitespace
 - [x] String
 - [ ] Integer
-- [ ] Double
+- [x] Float
 - [x] Regex
 - [ ] Multiple instances of a rule
 - [ ] List of a rule with separator

@@ -151,6 +151,20 @@ var SimpleParser = (function() {
 		return undefined;
 	}
 
+	// Parses a float, either positive or nigtave, posiibly with an exponent.
+	module.Parser.prototype.float = function () {
+		if (this.failure()) return undefined;
+
+		var valueString = this.regex("-?(0|[1-9][0-9]+)(\\.[0-9]+)?(e(0|[1-9][0-9]+))?");
+
+		if (this.success()) {
+			return parseFloat(valueString);
+		}
+
+		this.refail("Expected a float but got " + this.excerpt());
+		return undefined;
+	}
+
   return module;
 }
 )();
