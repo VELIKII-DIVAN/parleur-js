@@ -49,7 +49,7 @@ function parseVar(parser) {
   parser.string("var ");
   var name = parser.regex("[a-zA-Z]+");
   parser.string(" = ");
-  var value = parser.integer()");
+  var value = parser.integer();
   
   if (parser.success()) {
     return { name: name, value: value };
