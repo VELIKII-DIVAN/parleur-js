@@ -118,5 +118,5 @@ Everyone is welcome to contribute! The source code is very simple. The framework
 - [x] Regex
 - [ ] Multiple instances of a rule
 - [ ] List of a rule with separator
-- [ ] One of several possible rules
+- [x] One of several possible rules
 - [ ] A rule enclosed in parenteses or other delimiters
