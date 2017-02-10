@@ -115,6 +115,13 @@ var SimpleParser = (function() {
     }
   }
 
+  // Parses one or more whitespace characters (space, tab, newline).
+  module.whitespace = function (parser) {
+    parser.regex("( |\t|\n|\r)+");
+    parser.refail(parser.expected("whitespace"));
+  }
+
+  // Constructor for Parser object, takes the text to parse.
   module.Parser = function (text) {
     this.text = text;
     this.position = 0;
@@ -168,6 +175,10 @@ var SimpleParser = (function() {
 
     return "'" + current.substr(0, this.excerptLength) + " ...'";
   };
+
+  module.Parser.prototype.expected = function (name) {
+    return "Expected " + name + " but got " + this.excerpt();
+  }
 
   // Signals that a parser error has occured, chaining the new error.
   module.Parser.prototype.fail = function (message) {
@@ -228,12 +239,17 @@ var SimpleParser = (function() {
   // Parses and returns the given string.
   module.Parser.prototype.string = function (string) {
     return module.string(string)(this);
-  };
+  }
 
   // Returns true if no parser error has occured, false otherwise.
   module.Parser.prototype.success = function () {
     return this.error == undefined;
-  };
+  }
+
+  // Parses one or more whitespace characters (space, tab, newline).
+  module.Parser.prototype.whitespace = function () {
+    return module.whitespace(this);
+  }
 
   return module;
 }
