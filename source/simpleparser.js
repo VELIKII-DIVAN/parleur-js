@@ -18,7 +18,7 @@ var SimpleParser = (function() {
     return this.error != undefined;
   };
 
-  // Signals that a parser error has occured.
+  // Signals that a parser error has occured, chaining the new error.
   module.Parser.prototype.fail = function (message) {
     if (this.error == undefined) {
       this.error = {
@@ -35,6 +35,16 @@ var SimpleParser = (function() {
       };
     }
   };
+
+	// Replaces the message of the topmost error.
+	module.Parser.prototype.refail = function (message) {
+		if (this.error == undefined) {
+			return;
+		}
+		else {
+			this.error.message = message;
+		}
+	}
 
   // Assmbles and returns a message from the current error.
   module.Parser.prototype.errorMessage = function () {
@@ -62,11 +72,15 @@ var SimpleParser = (function() {
   module.Parser.prototype.excerpt = function () {
     var current = this.current();
 
+		if (current.length == 0) {
+			return "end of text";
+		}
+
     if (current.length < this.excerptLength) {
-      return current;
+      return "'" + current + "'";
     }
 
-    return current.substr(0, this.excerptLength) + " ...";
+    return "'" + current.substr(0, this.excerptLength) + " ...'";
   };
 
   // Returns the text to parse, starting from the current position.
@@ -82,11 +96,11 @@ var SimpleParser = (function() {
       return;
     }
     
-    this.fail("Expected end of text but got '" + this.excerpt() + "'");
+    this.fail("Expected end of text but got " + this.excerpt());
     return undefined;
   }
 
-  // Parses the given string and returns it.
+  // Parses and returns the given string.
   module.Parser.prototype.string = function (string) {
     if (this.failure()) return;
 
@@ -95,11 +109,12 @@ var SimpleParser = (function() {
       return string;
     }
 
-    this.fail("Expected '" + string + "' but got '" + this.excerpt() + "'");
+    this.fail("Expected '" + string + "' but got " + this.excerpt());
 
     return undefined;
   };
 
+	// Parses and returns a match for the given regular expression pattern.
   module.Parser.prototype.regex = function (pattern) {
     if (this.failure()) return undefined;
 
@@ -112,7 +127,7 @@ var SimpleParser = (function() {
     var matches = regex.exec(current);
 
     if (matches == null) {
-      this.fail("Expected a match for the regular expression '" + pattern + "' but got '" + this.excerpt() + "'");
+      this.fail("Expected a match for the regular expression '" + pattern + "' but got " + this.excerpt());
       return undefined;
     }
 
@@ -121,6 +136,20 @@ var SimpleParser = (function() {
 
     return match;
   }
+
+	// Parses an integer, either positive or negative.
+	module.Parser.prototype.integer = function () {
+		if (this.failure()) return undefined;
+
+		var valueString = this.regex("-?(0|[1-9][0-9]*)");
+
+		if (this.success()) {
+			return parseInt(valueString);
+		}
+
+		this.refail("Expected an integer but got " + this.excerpt());
+		return undefined;
+	}
 
   return module;
 }

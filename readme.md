@@ -39,7 +39,7 @@ Now we're ready to get into the good stuff. To parse our expression "var foo = 4
 1. Parse the string "var ".
 2. Parse the name of our variable.
 3. Parse the string " = ".
-4. Parse the value of our variable, which we assume is always a whole number.
+4. Parse the value of our variable, which we assume is a whole number.
 
 We can use the built in rules to achieve this. The implementation looks like:
 ```javascript
@@ -49,17 +49,17 @@ function parseVar(parser) {
   parser.string("var ");
   var name = parser.regex("[a-zA-Z]+");
   parser.string(" = ");
-  var value = parser.regex("(0|[1-9][0-9]*)");
+  var value = parser.integer()");
   
   if (parser.success()) {
-    return { name: name, value: parseInt(value) };
+    return { name: name, value: value };
   }
   
   parser.fail("Failed to parse variable assignment");
   return undefined;
 }
 ```
-Here we use the `Parser.string(string)` function to parse the two exact strings `var ` and ` = `. The function `Parser.regex(pattern)` is used to parse our variable name and value. Inside the if-statement we use the parsed values to build an object, which represents our variable assignment. 
+Here we use the `Parser.string(string)` function to parse the two exact strings `var ` and ` = `. The function `Parser.regex(pattern)` is used to parse the name of our variable. `Parser.integer()` is used to parse the value. Inside the if-statement we use the parsed values to build an object, which represents our variable assignment. 
 
 We should now try to use our rule. We call it like this:
 ```javascript
@@ -67,7 +67,35 @@ var textToParse = "var foo = 42";
 var parser = new SimpleParser.Parser(textToParse);
 var varExpression = parseVar(parser);
 parser.end();
-```
-Notice that we have added a `Parser.end()` call. This makes sure that we have parsed all the input text. If we did not make this call our parser would accept strings like `var a = 5 thisisnotsupposedtobehere`. That pretty much wraps it up for basic usage, now go and build your own great, big, complex parser!
 
-*If you don't feel like copy-pasting this code, the code from the tutorial can be found and tried out in examples/var.html*
+if (parser.success()) {
+  console.log("Success!");
+}
+else {
+  console.log(parser.errorMessage();
+}
+```
+Notice that we have added a `Parser.end()` call. This makes sure that we have parsed all the input text. If we did not make this call our parser would accept strings like `var a = 5 thisisnotsupposedtobehere`. If our parser failed, we use `Parser.errorMessage()` to get a nice error description. Lets look at some example input/output pairs:
+
+```
+> var foo = 42
+< Success!
+
+> var myvariable = -4200
+< Success!
+
+> var foo = 42 thisisnotsupposedtobehere
+< Expected end of text but got ' thisisnotsu ...' (column 12)
+
+> var foo = bar
+< Failed to parse variable assignment:
+< Expected an integer but got 'bar' (column 10)
+
+> var foo + bar
+< Failed to parse variable assignment:
+< Expected ' = ' but got ' + bar ' (column 7)
+```
+
+That pretty much wraps it up. Have fun building your own parsers!
+
+*The code for this tutorial can be found in examples/var.html*
