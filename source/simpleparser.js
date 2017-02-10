@@ -2,7 +2,7 @@ var SimpleParser = (function() {
   var module = {};
 
   // Builds a function which takes a parser, and asserts that it has no more text to parse.
-  module.end = function (parser) {
+  module.end = function(parser) {
     if (parser.failure()) return undefined;
 
     if (parser.current() === "") {
@@ -14,7 +14,7 @@ var SimpleParser = (function() {
   }
 
   // Parses a float, either positive or nigtave, posiibly with an exponent.
-  module.float = function (parser) {
+  module.float = function(parser) {
     if (parser.failure()) return undefined;
 
     var valueString = parser.regex("-?(0|[1-9][0-9]*)(\\.[0-9]+)?(e(0|[1-9][0-9]+))?");
@@ -28,7 +28,7 @@ var SimpleParser = (function() {
   }
 
   // Parses an integer, either positive or negative.
-  module.integer = function (parser) {
+  module.integer = function(parser) {
     if (parser.failure()) return undefined;
 
     var valueString = parser.regex("-?(0|[1-9][0-9]*)");
@@ -45,8 +45,8 @@ var SimpleParser = (function() {
   // several possibilities returning the result of the first rule 
   // to succeed. If none of the possibilities succeed the error
   // message of the rule which consumed the most text is used.
-  module.oneOf = function (possibilities) {
-    return function (parser) {
+  module.oneOf = function(possibilities) {
+    return function(parser) {
       if (parser.failure()) return undefined;
 
       var topError = undefined;
@@ -75,8 +75,8 @@ var SimpleParser = (function() {
 
   // Builds a function which takes a parser, and parses and returns a match
   // for the given regular expression pattern.
-  module.regex = function (pattern) {
-    return function (parser) {
+  module.regex = function(pattern) {
+    return function(parser) {
       if (parser.failure()) return undefined;
 
       if (!pattern.startsWith("^")) {
@@ -100,8 +100,8 @@ var SimpleParser = (function() {
   }
 
   // Builds a function which takes a parser, and parses and returns the given string.
-  module.string = function (string) {
-    return function (parser) {
+  module.string = function(string) {
+    return function(parser) {
       if (parser.failure()) return;
 
       if (parser.current().startsWith(string)) {
@@ -116,13 +116,31 @@ var SimpleParser = (function() {
   }
 
   // Parses one or more whitespace characters (space, tab, newline).
-  module.whitespace = function (parser) {
+  module.whitespace = function(parser) {
+    if (parser.failure()) return;
+
     parser.regex("( |\t|\n|\r)+");
     parser.refail(parser.expected("whitespace"));
   }
 
+  // Parses one or more space characters.
+  module.space = function(parser) {
+    if (parser.failure()) return;
+
+    parser.regex(" +");
+    parser.refail(parser.expected("space"));
+  }
+
+  // Parses one or more newline characters.
+  module.newline = function(parser) {
+    if (parser.failure()) return;
+
+    parser.regex("(\n|\r\n)+");
+    parser.refail(parser.expected("space"));
+  }
+
   // Constructor for Parser object, takes the text to parse.
-  module.Parser = function (text) {
+  module.Parser = function(text) {
     this.text = text;
     this.position = 0;
     this.error = undefined;
@@ -130,17 +148,17 @@ var SimpleParser = (function() {
   };
 
   // Returns the text to parse, starting from the current position.
-  module.Parser.prototype.current = function () {
+  module.Parser.prototype.current = function() {
     return this.text.substr(this.position);
   };
 
   // Asserts that there is no more text to parse.
-  module.Parser.prototype.end = function () {
+  module.Parser.prototype.end = function() {
     return module.end(this);
   }
 
   // Assmbles and returns a message from the current error.
-  module.Parser.prototype.errorMessage = function () {
+  module.Parser.prototype.errorMessage = function() {
     var message = "";
     var error = this.error;
 
@@ -162,7 +180,7 @@ var SimpleParser = (function() {
 
   // Gets an excerpt of the text at the current position for building
   // error messages.
-  module.Parser.prototype.excerpt = function () {
+  module.Parser.prototype.excerpt = function() {
     var current = this.current();
 
     if (current.length == 0) {
@@ -176,12 +194,12 @@ var SimpleParser = (function() {
     return "'" + current.substr(0, this.excerptLength) + " ...'";
   };
 
-  module.Parser.prototype.expected = function (name) {
+  module.Parser.prototype.expected = function(name) {
     return "Expected " + name + " but got " + this.excerpt();
   }
 
   // Signals that a parser error has occured, chaining the new error.
-  module.Parser.prototype.fail = function (message) {
+  module.Parser.prototype.fail = function(message) {
     if (this.error == undefined) {
       this.error = {
         message: message,
@@ -199,29 +217,29 @@ var SimpleParser = (function() {
   };
 
   // Returns true if a parser error has occured, false otherwise.
-  module.Parser.prototype.failure = function () {
+  module.Parser.prototype.failure = function() {
     return this.error != undefined;
   };
 
   // Parses a float, either positive or nigtave, posiibly with an exponent.
-  module.Parser.prototype.float = function () {
+  module.Parser.prototype.float = function() {
     return module.float(this);
   }
 
   // Parses an integer, either positive or negative.
-  module.Parser.prototype.integer = function (parser) {
+  module.Parser.prototype.integer = function(parser) {
     return module.integer(this);
   }
 
   // Parses one of several possibilities returning the result of the 
   // first rule to succeed. If none of the possibilities succeed the
   // error message of the rule which consumed the most text is used.
-  module.Parser.prototype.oneOf = function (possibilities) {
+  module.Parser.prototype.oneOf = function(possibilities) {
     return module.oneOf(possibilities)(this);
   }
 
   // Replaces the message of the topmost error.
-  module.Parser.prototype.refail = function (message) {
+  module.Parser.prototype.refail = function(message) {
     if (this.error == undefined) {
       return;
     }
@@ -232,23 +250,33 @@ var SimpleParser = (function() {
   }
 
   // Parses and returns a match for the given regular expression pattern.
-  module.Parser.prototype.regex = function (pattern) {
+  module.Parser.prototype.regex = function(pattern) {
     return module.regex(pattern)(this);
   }
 
   // Parses and returns the given string.
-  module.Parser.prototype.string = function (string) {
+  module.Parser.prototype.string = function(string) {
     return module.string(string)(this);
   }
 
   // Returns true if no parser error has occured, false otherwise.
-  module.Parser.prototype.success = function () {
+  module.Parser.prototype.success = function() {
     return this.error == undefined;
   }
 
   // Parses one or more whitespace characters (space, tab, newline).
-  module.Parser.prototype.whitespace = function () {
+  module.Parser.prototype.whitespace = function() {
     return module.whitespace(this);
+  }
+
+  // Parses one or more space characters.
+  module.Parser.prototype.space = function() {
+    return module.space(this);
+  }
+
+  // Parses one or more space characters.
+  module.Parser.prototype.newline = function() {
+    return module.newline(this);
   }
 
   return module;
