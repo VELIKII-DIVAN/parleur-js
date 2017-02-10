@@ -89,110 +89,150 @@ var SimpleParser = (function() {
     return this.text.substr(this.position);
   };
 
-  // Asserts that there is no more text to parse.
-  module.Parser.prototype.end = function () {
-    if (this.failure()) return undefined;
+  // Builds a function which takes a parser, and asserts that it has no more text to parse.
+  module.end = function (parser) {
+    if (parser.failure()) return undefined;
 
-    if (this.current() === "") {
+    if (parser.current() === "") {
       return;
     }
     
-    this.fail("Expected end of text but got " + this.excerpt());
+    parser.fail("Expected end of text but got " + parser.excerpt());
     return undefined;
+  }
+
+  // Asserts that there is no more text to parse.
+  module.Parser.prototype.end = function () {
+    return module.end(this);
+  }
+
+  // Builds a function which takes a parser, and parses and returns the given string.
+  module.string = function (string) {
+    return function (parser) {
+      if (parser.failure()) return;
+
+      if (parser.current().startsWith(string)) {
+        parser.position += string.length;
+        return string;
+      }
+
+      parser.fail("Expected '" + string + "' but got " + parser.excerpt());
+
+      return undefined;
+    }
   }
 
   // Parses and returns the given string.
   module.Parser.prototype.string = function (string) {
-    if (this.failure()) return;
-
-    if (this.current().startsWith(string)) {
-      this.position += string.length;
-      return string;
-    }
-
-    this.fail("Expected '" + string + "' but got " + this.excerpt());
-
-    return undefined;
+    return module.string(string)(this);
   };
+
+  // Builds a function which takes a parser, and parses and returns a match
+  // for the given regular expression pattern.
+  module.regex = function (pattern) {
+    return function (parser) {
+      if (parser.failure()) return undefined;
+
+      if (!pattern.startsWith("^")) {
+        pattern = "^" + pattern;
+      }
+
+      var regex = new RegExp(pattern);
+      var current = parser.current();
+      var matches = regex.exec(current);
+
+      if (matches == null) {
+        parser.fail("Expected a match for the regular expression '" + pattern + "' but got " + parser.excerpt());
+        return undefined;
+      }
+
+      var match = matches[0];
+      parser.position += match.length;
+
+      return match;
+    }
+  }
 
   // Parses and returns a match for the given regular expression pattern.
   module.Parser.prototype.regex = function (pattern) {
-    if (this.failure()) return undefined;
-
-    if (!pattern.startsWith("^")) {
-      pattern = "^" + pattern;
-    }
-
-    var regex = new RegExp(pattern);
-    var current = this.current();
-    var matches = regex.exec(current);
-
-    if (matches == null) {
-      this.fail("Expected a match for the regular expression '" + pattern + "' but got " + this.excerpt());
-      return undefined;
-    }
-
-    var match = matches[0];
-    this.position += match.length;
-
-    return match;
+    return module.regex(pattern)(this);
   }
 
   // Parses an integer, either positive or negative.
-  module.Parser.prototype.integer = function () {
-    if (this.failure()) return undefined;
+  module.integer = function (parser) {
+    if (parser.failure()) return undefined;
 
-    var valueString = this.regex("-?(0|[1-9][0-9]*)");
+    var valueString = parser.regex("-?(0|[1-9][0-9]*)");
 
-    if (this.success()) {
+    if (parser.success()) {
       return parseInt(valueString);
     }
 
-    this.refail("Expected an integer but got " + this.excerpt());
+    parser.refail("Expected an integer but got " + parser.excerpt());
+    return undefined;
+  }
+
+  // Parses an integer, either positive or negative.
+  module.Parser.prototype.integer = function (parser) {
+    return module.integer(this);
+  }
+
+  // Parses a float, either positive or nigtave, posiibly with an exponent.
+  module.float = function (parser) {
+    if (parser.failure()) return undefined;
+
+    var valueString = parser.regex("-?(0|[1-9][0-9]*)(\\.[0-9]+)?(e(0|[1-9][0-9]+))?");
+
+    if (parser.success()) {
+      return parseFloat(valueString);
+    }
+
+    parser.refail("Expected a float but got " + parser.excerpt());
     return undefined;
   }
 
   // Parses a float, either positive or nigtave, posiibly with an exponent.
   module.Parser.prototype.float = function () {
-    if (this.failure()) return undefined;
-
-    var valueString = this.regex("-?(0|[1-9][0-9]*)(\\.[0-9]+)?(e(0|[1-9][0-9]+))?");
-
-    if (this.success()) {
-      return parseFloat(valueString);
-    }
-
-    this.refail("Expected a float but got " + this.excerpt());
-    return undefined;
+    return module.float(this);
   }
 
-  // Parses one of several possibilities returning the result of the first
-  // one to succeed. If none of the possibilities succeed the error message of
-  // the rule which consumed the most text is used.
-  module.Parser.prototype.oneOf = function (possibilities) {
-    if (this.failure()) return undefined;
+  // Builds a function which takes a parser, and parses one of 
+  // several possibilities returning the result of the first rule 
+  // to succeed. If none of the possibilities succeed the error
+  // message of the rule which consumed the most text is used.
+  module.oneOf = function (possibilities) {
+    return function (parser) {
+      if (parser.failure()) return undefined;
 
-    var topError = undefined;
+      var topError = undefined;
 
-    for (var i = 0; i < possibilities.length; i++) {
-      var rule = possibilities[i];
-      
-      var result = rule(this);
+      for (var i = 0; i < possibilities.length; i++) {
+        var rule = possibilities[i];
+        
+        var result = rule(parser);
 
-      if (this.success()) {
-        return result;
+        if (parser.success()) {
+          return result;
+        }
+
+        if (topError == undefined || parser.error.position > topError.position) {
+          topError = parser.error;
+        }
+
+        parser.error = undefined;
       }
 
-      if (topError == undefined || this.error.position > topError.position) {
-        topError = this.error;
-      }
-
-      this.error = undefined;
+      parser.error = topError;
+      parser.fail("Error while in `oneOf` (use `refail` to add a more appropriate error message)");
+      return undefined;
     }
+  }
 
-    this.error = topError;
-    this.fail("Error while in `oneOf` (use `refail` to add a more appropriate error message)");
-    return undefined; 
+  // Parses one of several possibilities returning the result of the 
+  // first rule to succeed. If none of the possibilities succeed the
+  // error message of the rule which consumed the most text is used.
+  module.Parser.prototype.oneOf = function (possibilities) {
+    return module.oneOf(possibilities)(this);
   }
 
   return module;
