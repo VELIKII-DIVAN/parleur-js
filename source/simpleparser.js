@@ -43,6 +43,7 @@ var SimpleParser = (function() {
 		}
 		else {
 			this.error.message = message;
+			this.error.innerError = undefined;
 		}
 	}
 
@@ -155,7 +156,7 @@ var SimpleParser = (function() {
 	module.Parser.prototype.float = function () {
 		if (this.failure()) return undefined;
 
-		var valueString = this.regex("-?(0|[1-9][0-9]+)(\\.[0-9]+)?(e(0|[1-9][0-9]+))?");
+		var valueString = this.regex("-?(0|[1-9][0-9]*)(\\.[0-9]+)?(e(0|[1-9][0-9]+))?");
 
 		if (this.success()) {
 			return parseFloat(valueString);
@@ -163,6 +164,35 @@ var SimpleParser = (function() {
 
 		this.refail("Expected a float but got " + this.excerpt());
 		return undefined;
+	}
+
+	// Parses one of several possibilities returning the result of the first
+	// one to succeed. If none of the possibilities succeed the error message of
+	// the rule which consumed the most text is used.
+	module.Parser.prototype.oneOf = function (possibilities) {
+		if (this.failure()) return undefined;
+
+		var topError = undefined;
+
+		for (var i = 0; i < possibilities.length; i++) {
+			var rule = possibilities[i];
+			
+			var result = rule(this);
+
+			if (this.success()) {
+				return result;
+			}
+
+			if (topError == undefined || this.error.position > topError.position) {
+				topError = this.error;
+			}
+
+			this.error = undefined;
+		}
+
+		this.error = topError;
+		this.fail("Error while in `oneOf` (use `refail` to add a more appropriate error message)");
+		return undefined;	
 	}
 
   return module;
