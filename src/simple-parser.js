@@ -67,7 +67,7 @@ var SimpleParser = (function() {
   // Builds a function which takes a parser and parses multiple instances of one
   // rule, with an optional required count.
   module.many = function (parserFunc, atLeast) {
-    return function(parser) {
+    var builtFunction = function(parser) {
       if (parser.failure()) return undefined;
       var results = [];
 
@@ -87,7 +87,22 @@ var SimpleParser = (function() {
       }
 
       return results;
+    };
+
+    return builtFunction;
+  };
+
+  // Parses one or more newline characters.
+  module.newline = function(parser) {
+    if (parser.failure()) return;
+
+    var result = parser.regex("(\n|\r\n)+");
+
+    if (parser.success()) {
+      return result;
     }
+
+    parser.refail(parser.expected("space"));
   }
 
   // Builds a function which takes a parser, and parses one of several
@@ -166,6 +181,44 @@ var SimpleParser = (function() {
     }
   }
 
+  // Many instances of one rule separated by a string.
+  module.separated = function(separator, atLeast, rule) {
+    var builtRule = function(parser) {
+      if (parser.failure()) return undefined;
+
+      var ruleWithSeparator = function(innerParser) {
+        innerParser.optionalWhitespace();
+        innerParser.string(separator);
+        innerParser.optionalWhitespace();
+        var result = rule(innerParser);
+        return result;
+      };
+
+      var results = [];
+      var head = rule(parser);
+
+      if (head != undefined) {
+        results.push(head);
+        var tail = parser.many(ruleWithSeparator, 0); 
+        results = results.concat(tail);
+      }
+
+      if (results.length < atLeast) {
+        parser.fail("Expected at least " + atLeast + " of <something> (use refail to provide a more meaningful error message).")
+      }
+
+      // Possibly `head` failed, if it's OK to parse zero instances, we should
+      // not fail.
+      if (parser.failure() && atLeast <= 0) {
+        parser.error = undefined;
+      }
+
+      return results;
+    };
+
+    return builtRule;
+  };
+
   // Builds a function which takes a parser, and parses and returns the given
   // string.
   module.string = function(string) {
@@ -209,18 +262,6 @@ var SimpleParser = (function() {
     parser.refail(parser.expected("space"));
   }
 
-  // Parses one or more newline characters.
-  module.newline = function(parser) {
-    if (parser.failure()) return;
-
-    var result = parser.regex("(\n|\r\n)+");
-
-    if (parser.success()) {
-      return result;
-    }
-
-    parser.refail(parser.expected("space"));
-  }
 
   // Constructor for Parser object, takes the text to parse.
   module.Parser = function(text) {
@@ -355,6 +396,11 @@ var SimpleParser = (function() {
   // Parses and returns a match for the given regular expression pattern.
   module.Parser.prototype.regex = function(pattern) {
     return module.regex(pattern)(this);
+  }
+
+  // Many instances of one rule separated by a string.
+  module.Parser.prototype.separated = function(separator, atLeast, rule) {
+    return module.separated(separator, atLeast, rule)(this);
   }
 
   // Parses and returns the given string.

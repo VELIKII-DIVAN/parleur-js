@@ -32,10 +32,12 @@ function assertFalse(b) {
 }
 
 // Asserts that 'a' equals 'b'.
-function assertEquals(a, b) {
+function assertEquals(a, b, message) {
   if (a === b) {
     return;
   }
-  
-  throw "Assertion error: " + a + " != " + b;
+ 
+  message = message ? " (" + message + ")" : "";
+
+  throw "Assertion error: " + a + " != " + b + message;
 }
