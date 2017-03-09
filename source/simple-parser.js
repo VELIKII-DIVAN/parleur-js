@@ -102,6 +102,22 @@ var SimpleParser = (function() {
     }
   }
 
+  // Parses zero or more space characters.
+  module.optionalSpace = function(parser) {
+    if (parser.failure()) return;
+
+    var result = parser.regex(" *");
+    return result;
+  }
+
+  // Parses zero or more whitespace characters (space, tab, newline).
+  module.optionalWhitespace = function(parser) {
+    if (parser.failure()) return;
+
+    var result = parser.regex("( |\t|\n|\r)*");
+    return result;
+  }
+
   // Builds a function which takes a parser, and parses and returns a match for
   // the given regular expression pattern.
   module.regex = function(pattern) {
@@ -276,8 +292,9 @@ var SimpleParser = (function() {
     return module.int(this);
   }
 
-  module.Parser.prototype.many = function(parserFunc, atLeast) {
-    return module.many(parserFunc, atLeast)(this);
+  // Parses many instances of a rule, with an optional minimal amount.
+  module.Parser.prototype.many = function(rule, atLeast) {
+    return module.many(rule, atLeast)(this);
   }
 
   // Parses one of several possibilities returning the result of the 
@@ -285,6 +302,16 @@ var SimpleParser = (function() {
   // error message of the rule which consumed the most text is used.
   module.Parser.prototype.oneOf = function(possibilities) {
     return module.oneOf(possibilities)(this);
+  }
+
+  // Parses zero or more space characters. 
+  module.Parser.prototype.optionalSpace = function() {
+    return module.optionalSpace(this);
+  }
+
+  // Parses zero or more white space characters (space, tab, newline).
+  module.Parser.prototype.optionalWhitespace = function() {
+    return module.optionalWhitespace(this);
   }
 
   // Replaces the message of the topmost error.

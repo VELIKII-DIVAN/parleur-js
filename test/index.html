@@ -20,7 +20,7 @@ body {
     <h1>simpleparser.js test results:</h1>
   </body>
 
-  <script type="text/javascript" src="/source/simpleparser.js"></script>  
+  <script type="text/javascript" src="/source/simple-parser.js"></script>  
   <script type="text/javascript" src="/test/test.js"></script>  
   <script type="text/javascript" src="/test/dummy.js"></script>  
   <script type="text/javascript" src="/test/fail.js"></script>  
@@ -35,6 +35,8 @@ body {
   <script type="text/javascript" src="/test/newline.js"></script>
   <script type="text/javascript" src="/test/many.js"></script>
   <script type="text/javascript" src="/test/oneof.js"></script>
+  <script type="text/javascript" src="/test/optional-whitespace.js"></script>
+  <script type="text/javascript" src="/test/optional-space.js"></script>
 
   <script>
 (function() {
@@ -61,6 +63,8 @@ body {
   runTest("many (negative)", manyNegativeTest);
   runTest("oneOf (negative)", oneOfNegativeTest);
   runTest("oneOf (positive)", oneOfPositiveTest);
+  runTest("optionalWhitespace (positive)", optionalWhitespacePositiveTest);
+  runTest("optionalSpace (positive)", optionalSpacePositiveTest);
 })();
   </script>
 </html>
