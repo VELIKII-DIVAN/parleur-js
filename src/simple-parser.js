@@ -1,6 +1,28 @@
 var SimpleParser = (function() {
   var module = {};
 
+  // Parses a rule delimited by begin and end strings (such as parentheses).
+  module.delimited = function(begin, end, rule) {
+    var builtRule = function(parser) {
+      if (parser.failure()) return undefined;
+
+      parser.string(begin);
+      parser.optionalWhitespace();
+      var result = rule(parser);
+      parser.optionalWhitespace();
+      parser.string(end);
+
+      if (parser.success()) {
+        return result;
+      }
+
+      parser.fail("Expected <something> enclosed in '" + begin + "' and '" + end + "' (use refail to provide a more meaningful error message)");
+      return undefined;
+    };
+
+    return builtRule;
+  };
+
   // Builds a function which takes a parser, and asserts that it has no more 
   // text to parse.
   module.end = function(parser) {
@@ -61,7 +83,7 @@ var SimpleParser = (function() {
       }
 
       if (atLeast != undefined && results.length < atLeast) {
-        parser.fail("Error while in `multiple` expected at least " + atLeast + " instances " + "(use `refail` to add a more appropriate error message)");
+        parser.fail("Expected at least " + atLeast + " of <something>" + "(use refail to provide a more meaningful error message).");
       }
 
       return results;
@@ -97,7 +119,7 @@ var SimpleParser = (function() {
       }
 
       parser.error = topError;
-      parser.fail("Error while in `oneOf` (use `refail` to add a more appropriate error message)");
+      parser.fail("Error while in parser.oneOf (use refail to provide a more meaningful error message).");
       return undefined;
     }
   }
@@ -207,6 +229,11 @@ var SimpleParser = (function() {
     this.error = undefined;
     this.excerptLength = 12;
   };
+
+  // Parses a rule delimited by begin and end strings (such as parentheses).
+  module.Parser.prototype.delimited = function(begin, end, rule) {
+    return module.delimited(begin, end, rule)(this);
+  }
 
   // Returns the text to parse, starting from the current position.
   module.Parser.prototype.current = function() {
