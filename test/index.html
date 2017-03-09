@@ -1,6 +1,20 @@
 <html>
   <head>
     <title>simpleparser.js test</title>
+
+    <style>
+body {
+  font-family: monospace;
+}
+
+.failure {
+  color: #ff0000;
+}
+
+.success {
+  color: #00aa00;
+}
+    </style>
   </head>
   <body>
     <h1>simpleparser.js test results:</h1>
@@ -9,12 +23,44 @@
   <script type="text/javascript" src="/source/simpleparser.js"></script>  
   <script type="text/javascript" src="/test/test.js"></script>  
   <script type="text/javascript" src="/test/dummy.js"></script>  
+  <script type="text/javascript" src="/test/fail.js"></script>  
+  <script type="text/javascript" src="/test/refail.js"></script>  
+  <script type="text/javascript" src="/test/end.js"></script>  
+  <script type="text/javascript" src="/test/string.js"></script>  
+  <script type="text/javascript" src="/test/whitespace.js"></script>
+  <script type="text/javascript" src="/test/space.js"></script>
+  <script type="text/javascript" src="/test/float.js"></script>
+  <script type="text/javascript" src="/test/int.js"></script>
+  <script type="text/javascript" src="/test/regex.js"></script>
+  <script type="text/javascript" src="/test/newline.js"></script>
+  <script type="text/javascript" src="/test/many.js"></script>
+  <script type="text/javascript" src="/test/oneof.js"></script>
 
   <script>
 (function() {
-  runPositiveTest("positive dummy", dummyTestPositive);
-  runNegativeTest("negative dummy", dummyTestNegative);
-
+  runTest("dummy", dummyTest);
+  runTest("fail", failTest);
+  runTest("refail", refailTest);
+  runTest("end (positive)", endPositiveTest);
+  runTest("end (negative)", endNegativeTest);
+  runTest("string (positive)", stringPositiveTest);
+  runTest("string (negative)", stringNegativeTest);
+  runTest("whitespace (positive)", whitespacePositiveTest);
+  runTest("whitespace (negative)", whitespaceNegativeTest);
+  runTest("float (positive)", floatPositiveTest);
+  runTest("float (negative)", floatNegativeTest);
+  runTest("regex (positive)", regexPositiveTest);
+  runTest("regex (negative)", regexNegativeTest);
+  runTest("int (positive)", intPositiveTest);
+  runTest("int (negative)", intNegativeTest);
+  runTest("space (positive)", spacePositiveTest);
+  runTest("space (negative)", spaceNegativeTest);
+  runTest("newline (positive)", newlinePositiveTest);
+  runTest("newline (negative)", newlineNegativeTest);
+  runTest("many (positive)", manyPositiveTest);
+  runTest("many (negative)", manyNegativeTest);
+  runTest("oneOf (negative)", oneOfNegativeTest);
+  runTest("oneOf (positive)", oneOfPositiveTest);
 })();
   </script>
 </html>

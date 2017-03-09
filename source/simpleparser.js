@@ -29,7 +29,7 @@ var SimpleParser = (function() {
   }
 
   // Parses an integer, either positive or negative.
-  module.integer = function(parser) {
+  module.int = function(parser) {
     if (parser.failure()) return undefined;
 
     var valueString = parser.regex("-?(0|[1-9][0-9]*)");
@@ -47,20 +47,20 @@ var SimpleParser = (function() {
   module.many = function (parserFunc, atLeast) {
     return function(parser) {
       if (parser.failure()) return undefined;
-      var reuslts = [];
+      var results = [];
 
       while (true) {
         var result = parserFunc(parser);
         
         if (parser.failure()) {
-          parser.failure = undefined;
+          parser.error = undefined;
           break;
         }
 
         results.push(result);
       }
 
-      if (results.length < atLeast) {
+      if (atLeast != undefined && results.length < atLeast) {
         parser.fail("Error while in `multiple` expected at least " + atLeast + " instances " + "(use `refail` to add a more appropriate error message)");
       }
 
@@ -86,7 +86,8 @@ var SimpleParser = (function() {
           return result;
         }
 
-        var isNewTopError = parser.error.position > topError.position;
+        var topPosition = topError ? topError.position : -1;
+        var isNewTopError = parser.error.position > topPosition;
 
         if (topError == undefined || isNewTopError) {
           topError = parser.error;
@@ -148,7 +149,12 @@ var SimpleParser = (function() {
   module.whitespace = function(parser) {
     if (parser.failure()) return;
 
-    parser.regex("( |\t|\n|\r)+");
+    var result = parser.regex("( |\t|\n|\r)+");
+
+    if (parser.success()) {
+      return result;
+    }
+
     parser.refail(parser.expected("whitespace"));
   }
 
@@ -156,7 +162,12 @@ var SimpleParser = (function() {
   module.space = function(parser) {
     if (parser.failure()) return;
 
-    parser.regex(" +");
+    var result = parser.regex(" +");
+
+    if (parser.success()) {
+      return result;
+    }
+
     parser.refail(parser.expected("space"));
   }
 
@@ -164,7 +175,12 @@ var SimpleParser = (function() {
   module.newline = function(parser) {
     if (parser.failure()) return;
 
-    parser.regex("(\n|\r\n)+");
+    var result = parser.regex("(\n|\r\n)+");
+
+    if (parser.success()) {
+      return result;
+    }
+
     parser.refail(parser.expected("space"));
   }
 
@@ -256,8 +272,8 @@ var SimpleParser = (function() {
   }
 
   // Parses an integer, either positive or negative.
-  module.Parser.prototype.integer = function() {
-    return module.integer(this);
+  module.Parser.prototype.int = function() {
+    return module.int(this);
   }
 
   module.Parser.prototype.many = function(parserFunc, atLeast) {

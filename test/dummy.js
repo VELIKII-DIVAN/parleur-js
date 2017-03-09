@@ -1,7 +1,4 @@
-function dummyTestPositive() {
-  // NOP
-}
-
-function dummyTestNegative() {
-  assert(false, "This should fail");
+function dummyTest() {
+  assertTrue(true);
+  assertEquals(42, 42);
 }

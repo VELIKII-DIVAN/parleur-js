@@ -1,37 +1,41 @@
 // Runs a test function and writes the ouput to the console and the
 // document.
-function runPositiveTest(name, testFunction) {
+function runTest(name, testFunction) {
   document.write(name + ": ");
   try {
     testFunction();
-    document.write("success");
+    document.write("<span class='success'>success");
   }
   catch(err) {
-    document.write("failure: " + err);
+    document.write("<span class='failure'>failure: " + err);
   }
 
-  document.write("<br/>");
+  document.write("</span><br/>");
 }
 
-// Runs a test function and writes the ouput to the console and the
-// document.
-function runNegativeTest(name, testFunction) {
-  document.write(name + ": ");
-  try {
-    testFunction();
-    document.write("failure (test was successful)");
-  }
-  catch(err) {
-    document.write("success");
-  }
-
-  document.write("<br/>");
-}
-
-function assert(b, message) {
+// Asserts that 'b' is true.
+function assertTrue(b) {
   if (b) {
     return;
   }
   
-  throw "Assertion error: " + message;
+  throw "Assertion error: expected true";
+}
+
+// Asserts that 'b' is false.
+function assertFalse(b) {
+  if (!b) {
+    return;
+  }
+  
+  throw "Assertion error: expected false";
+}
+
+// Asserts that 'a' equals 'b'.
+function assertEquals(a, b) {
+  if (a === b) {
+    return;
+  }
+  
+  throw "Assertion error: " + a + " != " + b;
 }
