@@ -1,0 +1,21 @@
+<html>
+  <head>
+    <title>simpleparser.js test</title>
+  </head>
+  <body>
+    <h1>simpleparser.js test results:</h1>
+  </body>
+
+  <script type="text/javascript" src="/source/simpleparser.js"></script>  
+  <script type="text/javascript" src="/test/test.js"></script>  
+  <script type="text/javascript" src="/test/dummy.js"></script>  
+
+  <script>
+(function() {
+  runPositiveTest("positive dummy", dummyTestPositive);
+  runNegativeTest("negative dummy", dummyTestNegative);
+
+})();
+  </script>
+</html>
+
