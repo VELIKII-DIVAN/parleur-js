@@ -1,7 +1,8 @@
 var SimpleParser = (function() {
   var module = {};
 
-  // Builds a function which takes a parser, and asserts that it has no more text to parse.
+  // Builds a function which takes a parser, and asserts that it has no more 
+  // text to parse.
   module.end = function(parser) {
     if (parser.failure()) return undefined;
 
@@ -41,10 +42,36 @@ var SimpleParser = (function() {
     return undefined;
   }
 
-  // Builds a function which takes a parser, and parses one of 
-  // several possibilities returning the result of the first rule 
-  // to succeed. If none of the possibilities succeed the error
-  // message of the rule which consumed the most text is used.
+  // Builds a function which takes a parser and parses multiple instances of one
+  // rule, with an optional required count.
+  module.many = function (parserFunc, atLeast) {
+    return function(parser) {
+      if (parser.failure()) return undefined;
+      var reuslts = [];
+
+      while (true) {
+        var result = parserFunc(parser);
+        
+        if (parser.failure()) {
+          parser.failure = undefined;
+          break;
+        }
+
+        results.push(result);
+      }
+
+      if (results.length < atLeast) {
+        parser.fail("Error while in `multiple` expected at least " + atLeast + " instances " + "(use `refail` to add a more appropriate error message)");
+      }
+
+      return results;
+    }
+  }
+
+  // Builds a function which takes a parser, and parses one of several
+  // possibilities returning the result of the first rule to succeed. If none of
+  // the possibilities succeed the error message of the rule which consumed the
+  // most text is used.
   module.oneOf = function(possibilities) {
     return function(parser) {
       if (parser.failure()) return undefined;
@@ -52,15 +79,16 @@ var SimpleParser = (function() {
       var topError = undefined;
 
       for (var i = 0; i < possibilities.length; i++) {
-        var rule = possibilities[i];
-        
+        var rule = possibilities[i];      
         var result = rule(parser);
 
         if (parser.success()) {
           return result;
         }
 
-        if (topError == undefined || parser.error.position > topError.position) {
+        var isNewTopError = parser.error.position > topError.position;
+
+        if (topError == undefined || isNewTopError) {
           topError = parser.error;
         }
 
@@ -73,8 +101,8 @@ var SimpleParser = (function() {
     }
   }
 
-  // Builds a function which takes a parser, and parses and returns a match
-  // for the given regular expression pattern.
+  // Builds a function which takes a parser, and parses and returns a match for
+  // the given regular expression pattern.
   module.regex = function(pattern) {
     return function(parser) {
       if (parser.failure()) return undefined;
@@ -99,7 +127,8 @@ var SimpleParser = (function() {
     }
   }
 
-  // Builds a function which takes a parser, and parses and returns the given string.
+  // Builds a function which takes a parser, and parses and returns the given
+  // string.
   module.string = function(string) {
     return function(parser) {
       if (parser.failure()) return;
@@ -227,8 +256,12 @@ var SimpleParser = (function() {
   }
 
   // Parses an integer, either positive or negative.
-  module.Parser.prototype.integer = function(parser) {
+  module.Parser.prototype.integer = function() {
     return module.integer(this);
+  }
+
+  module.Parser.prototype.many = function(parserFunc, atLeast) {
+    return module.many(parserFunc, atLeast)(this);
   }
 
   // Parses one of several possibilities returning the result of the 
