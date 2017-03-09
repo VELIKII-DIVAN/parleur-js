@@ -110,10 +110,11 @@ You can then find the example you're look for by going to *127.0.0.1:8080/exampl
 ## Contributing
 Everyone is welcome to contribute! The source code is very simple. The framework and basic API is up and running, so now we only need to add more primitive parse rules. Some suggestions are:
 
-- [ ] Character
 - [x] Whitespace
+- [x] Space
+- [x] Newline
 - [x] String
-- [ ] Integer
+- [x] Integer
 - [x] Float
 - [x] Regex
 - [ ] Multiple instances of a rule
