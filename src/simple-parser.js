@@ -185,6 +185,24 @@ var SimpleParser = (function() {
     }
   }
 
+  // Makes the given rule optional, returns undefined if the rule fails.
+  module.optional = function(rule) {
+    var builtRule = function(parser) {
+      if (parser.failure()) return;
+
+      var result = rule(parser);
+
+      if (parser.failure()) {
+        parser.error = undefined;
+        return undefined;
+      }
+
+      return result;
+    };
+
+    return builtRule;
+  };
+
   // Parses zero or more space characters.
   module.optionalSpace = function(parser) {
     if (parser.failure()) return;
@@ -280,6 +298,20 @@ var SimpleParser = (function() {
 
       return undefined;
     }
+  }
+
+  // Parses a word (a sequence of letters).
+  module.word = function(parser) {
+    if (parser.failure()) return;
+
+    var result = parser.regex("[a-zA-Z]+");
+
+    if (parser.success()) {
+      return result;
+    }
+
+    parser.refail("Expected a word");
+    return undefined;
   }
 
   // Parses one or more whitespace characters (space, tab, newline).
@@ -432,6 +464,11 @@ var SimpleParser = (function() {
     return module.oneOf(possibilities)(this);
   }
 
+  // Makes the given rule optional, returns undefined if the rule fails.
+  module.Parser.prototype.optional = function(rule) {
+    return module.optional(rule)(this);
+  }
+
   // Parses zero or more space characters. 
   module.Parser.prototype.optionalSpace = function() {
     return module.optionalSpace(this);
@@ -471,6 +508,11 @@ var SimpleParser = (function() {
   // Returns true if no parser error has occured, false otherwise.
   module.Parser.prototype.success = function() {
     return this.error == undefined;
+  }
+
+  // Parses a word (a sequence of letters).
+  module.Parser.prototype.word = function() {
+    return module.word(this);
   }
 
   // Parses one or more whitespace characters (space, tab, newline).

@@ -42,6 +42,8 @@ body {
   <script type="text/javascript" src="/test/separated.js"></script>
   <script type="text/javascript" src="/test/letter.js"></script>
   <script type="text/javascript" src="/test/digit.js"></script>
+  <script type="text/javascript" src="/test/optional.js"></script>
+  <script type="text/javascript" src="/test/word.js"></script>
 
   <script>
 (function() {
@@ -80,6 +82,9 @@ body {
   runTest("letter (negative)", letterNegativeTest);
   runTest("digit (positive)", digitPositiveTest);
   runTest("digit (negative)", digitNegativeTest);
+  runTest("optional (positive)", optionalPositiveTest);
+  runTest("word (positive)", wordPositiveTest);
+  runTest("word (negative)", wordNegativeTest);
 })();
   </script>
 </html>
