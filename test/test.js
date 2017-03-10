@@ -20,7 +20,7 @@ function assertTrue(b, message) {
   }
   
   message = message ? " (" + message + ")" : "";
-  throw "Assertion error: expected true";
+  throw "Assertion error: expected true" + message;
 }
 
 // Asserts that 'b' is false.

@@ -24,6 +24,7 @@ body {
   <script type="text/javascript" src="/test/test.js"></script>  
   <script type="text/javascript" src="/test/dummy.js"></script>  
   <script type="text/javascript" src="/test/fail.js"></script>  
+  <script type="text/javascript" src="/test/char.js"></script>  
   <script type="text/javascript" src="/test/refail.js"></script>  
   <script type="text/javascript" src="/test/end.js"></script>  
   <script type="text/javascript" src="/test/string.js"></script>  
@@ -39,6 +40,8 @@ body {
   <script type="text/javascript" src="/test/optional-space.js"></script>
   <script type="text/javascript" src="/test/delimited.js"></script>
   <script type="text/javascript" src="/test/separated.js"></script>
+  <script type="text/javascript" src="/test/letter.js"></script>
+  <script type="text/javascript" src="/test/digit.js"></script>
 
   <script>
 (function() {
@@ -47,6 +50,8 @@ body {
   runTest("refail", refailTest);
   runTest("end (positive)", endPositiveTest);
   runTest("end (negative)", endNegativeTest);
+  runTest("char (positive)", charPositiveTest);
+  runTest("char (negative)", charNegativeTest);
   runTest("string (positive)", stringPositiveTest);
   runTest("string (negative)", stringNegativeTest);
   runTest("whitespace (positive)", whitespacePositiveTest);
@@ -71,6 +76,10 @@ body {
   runTest("delimited (negative)", delimitedNegativeTest);
   runTest("separated (positive)", separatedPositiveTest);
   runTest("separated (negative)", separatedNegativeTest);
+  runTest("letter (positive)", letterPositiveTest);
+  runTest("letter (negative)", letterNegativeTest);
+  runTest("digit (positive)", digitPositiveTest);
+  runTest("digit (negative)", digitNegativeTest);
 })();
   </script>
 </html>

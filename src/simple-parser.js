@@ -1,6 +1,22 @@
 var SimpleParser = (function() {
   var module = {};
 
+  // Parses any character.
+  module.char = function(parser) {
+    if (parser.failure()) return undefined;
+
+    var text = parser.current();
+
+    if (text.length == 0) {
+      parser.fail("Expected a character");
+      return undefined;
+    }
+
+    var char = text[0];
+    parser.position += 1;
+    return char;
+  }
+
   // Parses a rule delimited by begin and end strings (such as parentheses).
   module.delimited = function(begin, end, rule) {
     var builtRule = function(parser) {
@@ -22,6 +38,21 @@ var SimpleParser = (function() {
 
     return builtRule;
   };
+
+  // Parses a single digit.
+  module.digit = function(parser) {
+    if (parser.failure()) return undefined;
+
+    var char = parser.regex("[0-9]");
+
+    if (parser.success()) {
+      return char;
+    }
+
+    parser.refail("Expected a digit, but got '" + parser.excerpt() + "'");
+
+    return undefined;
+  }
 
   // Builds a function which takes a parser, and asserts that it has no more 
   // text to parse.
@@ -61,6 +92,21 @@ var SimpleParser = (function() {
     }
 
     parser.refail("Expected an integer but got " + parser.excerpt());
+    return undefined;
+  }
+
+  // Parses a letter.
+  module.letter = function(parser) {
+    if (parser.failure()) return undefined;
+
+    var char = parser.regex("[a-zA-Z]");
+
+    if (parser.success()) {
+      return char;
+    }
+
+    parser.refail("Expected alphanumeric character, but got '" + parser.excerpt() + "'");
+
     return undefined;
   }
 
@@ -262,7 +308,6 @@ var SimpleParser = (function() {
     parser.refail(parser.expected("space"));
   }
 
-
   // Constructor for Parser object, takes the text to parse.
   module.Parser = function(text) {
     this.text = text;
@@ -271,9 +316,19 @@ var SimpleParser = (function() {
     this.excerptLength = 12;
   };
 
+  // Parses any character.
+  module.Parser.prototype.char = function() {
+    return module.char(this);
+  }
+
   // Parses a rule delimited by begin and end strings (such as parentheses).
   module.Parser.prototype.delimited = function(begin, end, rule) {
     return module.delimited(begin, end, rule)(this);
+  }
+
+  // Parses a single digit.
+  module.Parser.prototype.digit = function() {
+    return module.digit(this);
   }
 
   // Returns the text to parse, starting from the current position.
@@ -358,6 +413,11 @@ var SimpleParser = (function() {
   // Parses an integer, either positive or negative.
   module.Parser.prototype.int = function() {
     return module.int(this);
+  }
+
+  // Parses a single letter.
+  module.Parser.prototype.letter = function() {
+    return module.letter(this);
   }
 
   // Parses many instances of a rule, with an optional minimal amount.
