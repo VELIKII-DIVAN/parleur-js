@@ -4,31 +4,33 @@ function runTest(name, testFunction) {
   document.write(name + ": ");
   try {
     testFunction();
-    document.write("<span class='success'>success");
+    document.write("<span class='success'>passed");
   }
   catch(err) {
-    document.write("<span class='failure'>failure: " + err);
+    document.write("<span class='failure'>failed: " + err);
   }
 
   document.write("</span><br/>");
 }
 
 // Asserts that 'b' is true.
-function assertTrue(b) {
+function assertTrue(b, message) {
   if (b) {
     return;
   }
   
+  message = message ? " (" + message + ")" : "";
   throw "Assertion error: expected true";
 }
 
 // Asserts that 'b' is false.
-function assertFalse(b) {
+function assertFalse(b, message) {
   if (!b) {
     return;
   }
   
-  throw "Assertion error: expected false";
+  message = message ? " (" + message + ")" : "";
+  throw "Assertion error: expected false" + message;
 }
 
 // Asserts that 'a' equals 'b'.
@@ -38,6 +40,5 @@ function assertEquals(a, b, message) {
   }
  
   message = message ? " (" + message + ")" : "";
-
   throw "Assertion error: " + a + " != " + b + message;
 }
