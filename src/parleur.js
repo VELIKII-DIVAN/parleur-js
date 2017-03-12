@@ -1,4 +1,4 @@
-var SimpleParser = (function() {
+var Parleur = (function() {
   var module = {};
 
   // Parses any character.

@@ -1,6 +1,6 @@
 function wordPositiveTest() {
   var expected = "foo";
-  var parser = new SimpleParser.Parser(expected);
+  var parser = new Parleur.Parser(expected);
   var result = parser.word();;
   parser.end();
   assertTrue(parser.success(), "parser success");
@@ -8,17 +8,17 @@ function wordPositiveTest() {
 }
 
 function wordNegativeTest() {
-  var parser = new SimpleParser.Parser("");
+  var parser = new Parleur.Parser("");
   parser.word();;
   parser.end();
   assertFalse(parser.success(), "parser success");
 
-  parser = new SimpleParser.Parser("42");
+  parser = new Parleur.Parser("42");
   parser.word();;
   parser.end();
   assertFalse(parser.success(), "parser success");
 
-  parser = new SimpleParser.Parser("!");
+  parser = new Parleur.Parser("!");
   parser.word();;
   parser.end();
   assertFalse(parser.success(), "parser success");

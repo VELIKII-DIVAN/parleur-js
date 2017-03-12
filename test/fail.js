@@ -1,5 +1,5 @@
 function failTest() {
-  var parser = new SimpleParser.Parser("");
+  var parser = new Parleur.Parser("");
 
   parser.fail("This is a failure");
   assertTrue(parser.failure());

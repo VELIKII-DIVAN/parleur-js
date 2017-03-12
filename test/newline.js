@@ -1,6 +1,6 @@
 function newlinePositiveTest() {
   var expected = "\n\n\r\n";
-  var parser = new SimpleParser.Parser(expected);
+  var parser = new Parleur.Parser(expected);
 
   var result = parser.newline();
   parser.end();
@@ -10,7 +10,7 @@ function newlinePositiveTest() {
 }
 
 function newlineNegativeTest() {
-  var parser = new SimpleParser.Parser("foo");
+  var parser = new Parleur.Parser("foo");
 
   var result = parser.newline();
   parser.end();

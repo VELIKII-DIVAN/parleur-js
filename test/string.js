@@ -1,6 +1,6 @@
 function stringPositiveTest() {
   var expected = "foo";
-  var parser = new SimpleParser.Parser(expected);
+  var parser = new Parleur.Parser(expected);
 
   var result = parser.string(expected);
   parser.end();
@@ -11,7 +11,7 @@ function stringPositiveTest() {
 
 function stringNegativeTest() {
   var expected = "foo";
-  var parser = new SimpleParser.Parser("bar");
+  var parser = new Parleur.Parser("bar");
 
   var result = parser.string(expected);
   parser.end();

@@ -1,7 +1,7 @@
 function manyPositiveTest() {
   var expected = ["foo", "foo", "foo"];
-  var parser = new SimpleParser.Parser("foofoofoo");
-  var result = parser.many(SimpleParser.string("foo"));
+  var parser = new Parleur.Parser("foofoofoo");
+  var result = parser.many(Parleur.string("foo"));
   parser.end();
   assertTrue(parser.success());
   assertEquals(result.length, expected.length);
@@ -12,13 +12,13 @@ function manyPositiveTest() {
 }
 
 function manyNegativeTest() {
-  var parser = new SimpleParser.Parser("bar");
-  var result = parser.many(SimpleParser.string("foo"));
+  var parser = new Parleur.Parser("bar");
+  var result = parser.many(Parleur.string("foo"));
   parser.end();
   assertFalse(parser.success());
 
-  var parser = new SimpleParser.Parser("foofoo");
-  var result = parser.many(SimpleParser.string("foo"), 3);
+  var parser = new Parleur.Parser("foofoo");
+  var result = parser.many(Parleur.string("foo"), 3);
   parser.end();
   assertFalse(parser.success());
 }

@@ -1,6 +1,6 @@
 function spacePositiveTest() {
   var expected = "     ";
-  var parser = new SimpleParser.Parser(expected);
+  var parser = new Parleur.Parser(expected);
 
   var result = parser.space();
   parser.end();
@@ -10,7 +10,7 @@ function spacePositiveTest() {
 }
 
 function spaceNegativeTest() {
-  var parser = new SimpleParser.Parser("foo");
+  var parser = new Parleur.Parser("foo");
 
   var result = parser.space();
   parser.end();

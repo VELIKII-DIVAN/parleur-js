@@ -1,6 +1,6 @@
 function charPositiveTest() {
   var expected = "a"
-  var parser = new SimpleParser.Parser(expected);
+  var parser = new Parleur.Parser(expected);
   var result = parser.char();
   parser.end();
 
@@ -9,7 +9,7 @@ function charPositiveTest() {
 }
 
 function charNegativeTest() {
-  var parser = new SimpleParser.Parser("");
+  var parser = new Parleur.Parser("");
   var result = parser.char();
   parser.end();
 

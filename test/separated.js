@@ -1,7 +1,7 @@
 function separatedPositiveTest() {
   var expected = ["foo", "foo", "foo"];
-  var parser = new SimpleParser.Parser("foo, foo   , foo");
-  var result = parser.separated(",", 0, SimpleParser.string("foo"));
+  var parser = new Parleur.Parser("foo, foo   , foo");
+  var result = parser.separated(",", 0, Parleur.string("foo"));
   parser.end();
   assertTrue(parser.success());
   assertEquals(result.length, expected.length, "expected no. of results");
@@ -10,27 +10,27 @@ function separatedPositiveTest() {
     assertEquals(result[i], expected[i]);
   }
 
-  parser = new SimpleParser.Parser("");
-  result = parser.separated(",", 0, SimpleParser.string("foo"));
+  parser = new Parleur.Parser("");
+  result = parser.separated(",", 0, Parleur.string("foo"));
   parser.end();
   assertTrue(parser.success());
   assertEquals(result.length, 0, "expected no. of results");
 
-  parser = new SimpleParser.Parser("foo");
-  result = parser.separated(",", 0, SimpleParser.string("foo"));
+  parser = new Parleur.Parser("foo");
+  result = parser.separated(",", 0, Parleur.string("foo"));
   parser.end();
   assertTrue(parser.success());
   assertEquals(result.length, 1, "expected no. of results");
 }
 
 function separatedNegativeTest() {
-  var parser = new SimpleParser.Parser("foo, foo   , foo");
-  var result = parser.separated(",", 4, SimpleParser.string("foo"));
+  var parser = new Parleur.Parser("foo, foo   , foo");
+  var result = parser.separated(",", 4, Parleur.string("foo"));
   parser.end();
   assertFalse(parser.success());
 
-  var parser = new SimpleParser.Parser("foo, foo   , bar");
-  var result = parser.separated(",", 0, SimpleParser.string("foo"));
+  var parser = new Parleur.Parser("foo, foo   , bar");
+  var result = parser.separated(",", 0, Parleur.string("foo"));
   parser.end();
   assertFalse(parser.success());
 }

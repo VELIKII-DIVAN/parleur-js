@@ -1,6 +1,6 @@
 function delimitedPositiveTest() {
-  var parser = new SimpleParser.Parser("(42)");
-  var result = parser.delimited("(", ")", SimpleParser.int);
+  var parser = new Parleur.Parser("(42)");
+  var result = parser.delimited("(", ")", Parleur.int);
   parser.end();
 
   assertEquals(result, 42);
@@ -8,8 +8,8 @@ function delimitedPositiveTest() {
 }
 
 function delimitedNegativeTest() {
-  var parser = new SimpleParser.Parser("42");
-  var result = parser.delimited("(", ")", SimpleParser.int);
+  var parser = new Parleur.Parser("42");
+  var result = parser.delimited("(", ")", Parleur.int);
   parser.end();
 
   assertFalse(parser.success());

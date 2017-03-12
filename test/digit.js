@@ -1,6 +1,6 @@
 function digitPositiveTest() {
     var expected = "1"
-    var parser = new SimpleParser.Parser(expected);
+    var parser = new Parleur.Parser(expected);
     var result = parser.digit();
     parser.end();
     assertTrue(parser.success(), "parser success");
@@ -8,12 +8,12 @@ function digitPositiveTest() {
 }
 
 function digitNegativeTest() {
-    var parser = new SimpleParser.Parser("");
+    var parser = new Parleur.Parser("");
     var result = parser.digit();
     parser.end();
     assertFalse(parser.success(), "parser success");
 
-    parser = new SimpleParser.Parser("a");
+    parser = new Parleur.Parser("a");
     result = parser.digit();
     parser.end();
     assertFalse(parser.success(), "parser success");
