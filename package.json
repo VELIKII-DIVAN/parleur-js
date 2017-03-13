@@ -1,0 +1,25 @@
+{
+  "name": "parleur.js",
+  "version": "1.0.0",
+  "description": "A library for building text parsers",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/PelleJuul/parleur.js.git"
+  },
+  "keywords": [
+    "parser"
+  ],
+  "author": "Pelle Juul",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/PelleJuul/parleur.js/issues"
+  },
+  "homepage": "https://github.com/PelleJuul/parleur.js#readme"
+}
