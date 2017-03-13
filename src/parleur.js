@@ -3,6 +3,27 @@ var Parleur = (function() {
 
   // ---- ---- MODULE LEVEL PARSER FUNCTIONS ---- ---- //
 
+  module.chain = function(rules) {
+    var builtRule = function(parser) {
+      if (parser.failure()) return undefined;
+
+      var results = [];
+
+      for (i = 0; i < rules.length; i++) {
+        var result = rules[i](parser);
+        results.push(result);
+      }
+
+      if (parser.success()) {
+        return results;
+      }
+
+      return undefined;
+    };
+
+    return builtRule;
+  };
+
   // Parses a rule delimited by begin and end strings (such as parentheses).
   module.delimited = function(beginRule, endRule, rule) {
     var builtRule = function(parser) {
@@ -261,6 +282,10 @@ var Parleur = (function() {
     this.error = undefined;
     this.excerptLength = 12;
   };
+
+  module.Parser.prototype.chain = function(rules) {
+    return module.chain(rules)(this);
+  }
 
   // Parses a rule delimited by begin and end strings (such as parentheses).
   module.Parser.prototype.delimited = function(beginRule, endRule, rule) {
