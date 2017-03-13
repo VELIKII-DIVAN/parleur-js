@@ -24,7 +24,6 @@ body {
   <script type="text/javascript" src="/test/test.js"></script>  
   <script type="text/javascript" src="/test/dummy.js"></script>  
   <script type="text/javascript" src="/test/fail.js"></script>  
-  <script type="text/javascript" src="/test/char.js"></script>  
   <script type="text/javascript" src="/test/refail.js"></script>  
   <script type="text/javascript" src="/test/end.js"></script>  
   <script type="text/javascript" src="/test/string.js"></script>  
@@ -36,14 +35,9 @@ body {
   <script type="text/javascript" src="/test/newline.js"></script>
   <script type="text/javascript" src="/test/many.js"></script>
   <script type="text/javascript" src="/test/oneof.js"></script>
-  <script type="text/javascript" src="/test/optional-whitespace.js"></script>
-  <script type="text/javascript" src="/test/optional-space.js"></script>
   <script type="text/javascript" src="/test/delimited.js"></script>
   <script type="text/javascript" src="/test/separated.js"></script>
-  <script type="text/javascript" src="/test/letter.js"></script>
-  <script type="text/javascript" src="/test/digit.js"></script>
   <script type="text/javascript" src="/test/optional.js"></script>
-  <script type="text/javascript" src="/test/word.js"></script>
 
   <script>
 (function() {
@@ -52,8 +46,6 @@ body {
   runTest("refail", refailTest);
   runTest("end (positive)", endPositiveTest);
   runTest("end (negative)", endNegativeTest);
-  runTest("char (positive)", charPositiveTest);
-  runTest("char (negative)", charNegativeTest);
   runTest("string (positive)", stringPositiveTest);
   runTest("string (negative)", stringNegativeTest);
   runTest("whitespace (positive)", whitespacePositiveTest);
@@ -69,22 +61,12 @@ body {
   runTest("newline (positive)", newlinePositiveTest);
   runTest("newline (negative)", newlineNegativeTest);
   runTest("many (positive)", manyPositiveTest);
-  runTest("many (negative)", manyNegativeTest);
   runTest("oneOf (negative)", oneOfNegativeTest);
   runTest("oneOf (positive)", oneOfPositiveTest);
-  runTest("optionalWhitespace (positive)", optionalWhitespacePositiveTest);
-  runTest("optionalSpace (positive)", optionalSpacePositiveTest);
   runTest("delimited (positive)", delimitedPositiveTest);
   runTest("delimited (negative)", delimitedNegativeTest);
   runTest("separated (positive)", separatedPositiveTest);
-  runTest("separated (negative)", separatedNegativeTest);
-  runTest("letter (positive)", letterPositiveTest);
-  runTest("letter (negative)", letterNegativeTest);
-  runTest("digit (positive)", digitPositiveTest);
-  runTest("digit (negative)", digitNegativeTest);
   runTest("optional (positive)", optionalPositiveTest);
-  runTest("word (positive)", wordPositiveTest);
-  runTest("word (negative)", wordNegativeTest);
 })();
   </script>
 </html>

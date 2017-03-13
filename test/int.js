@@ -6,13 +6,6 @@ function intPositiveTest() {
   assertEquals(result, expected);
   assertTrue(parser.success());
 
-  expected = -42;
-  parser = new Parleur.Parser("-42");
-  result = parser.int();
-  parser.end();
-  assertEquals(result, expected);
-  assertTrue(parser.success());
-
   expected = 0;
   parser = new Parleur.Parser("0");
   result = parser.int();
@@ -24,6 +17,11 @@ function intPositiveTest() {
 function intNegativeTest() {
   var parser = new Parleur.Parser("foo");
   var result = parser.int();
+  parser.end();
+  assertTrue(parser.failure());
+
+  parser = new Parleur.Parser("-42");
+  result = parser.int();
   parser.end();
   assertTrue(parser.failure());
 }
