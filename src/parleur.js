@@ -1,58 +1,26 @@
 var Parleur = (function() {
   var module = {};
 
-  // Parses any character.
-  module.char = function(parser) {
-    if (parser.failure()) return undefined;
-
-    var text = parser.current();
-
-    if (text.length == 0) {
-      parser.fail("Expected a character");
-      return undefined;
-    }
-
-    var char = text[0];
-    parser.position += 1;
-    return char;
-  }
+  // ---- ---- MODULE LEVEL PARSER FUNCTIONS ---- ---- //
 
   // Parses a rule delimited by begin and end strings (such as parentheses).
-  module.delimited = function(begin, end, rule) {
+  module.delimited = function(beginRule, endRule, rule) {
     var builtRule = function(parser) {
       if (parser.failure()) return undefined;
 
-      parser.string(begin);
-      parser.optionalWhitespace();
+      beginRule(parser);
       var result = rule(parser);
-      parser.optionalWhitespace();
-      parser.string(end);
+      endRule(parser);
 
       if (parser.success()) {
         return result;
       }
 
-      parser.fail("Expected <something> enclosed in '" + begin + "' and '" + end + "' (use refail to provide a more meaningful error message)");
       return undefined;
     };
 
     return builtRule;
   };
-
-  // Parses a single digit.
-  module.digit = function(parser) {
-    if (parser.failure()) return undefined;
-
-    var char = parser.regex("[0-9]");
-
-    if (parser.success()) {
-      return char;
-    }
-
-    parser.refail("Expected a digit, but got '" + parser.excerpt() + "'");
-
-    return undefined;
-  }
 
   // Builds a function which takes a parser, and asserts that it has no more 
   // text to parse.
@@ -63,21 +31,21 @@ var Parleur = (function() {
       return;
     }
     
-    parser.fail("Expected end of text but got " + parser.excerpt());
+    parser.fail("Expected end of text");
     return undefined;
   }
 
-  // Parses a float, either positive or nigtave, posiibly with an exponent.
+  // Parses a floating point number
   module.float = function(parser) {
     if (parser.failure()) return undefined;
 
-    var valueString = parser.regex("-?(0|[1-9][0-9]*)(\\.[0-9]+)?(e(0|[1-9][0-9]+))?");
+    var valueString = parser.regex("(0|[1-9][0-9]*)(\\.[0-9]+)?(e(0|[1-9][0-9]+))?");
 
     if (parser.success()) {
       return parseFloat(valueString);
     }
 
-    parser.refail("Expected a float but got " + parser.excerpt());
+    parser.refail("Expected float");
     return undefined;
   }
 
@@ -85,34 +53,19 @@ var Parleur = (function() {
   module.int = function(parser) {
     if (parser.failure()) return undefined;
 
-    var valueString = parser.regex("-?(0|[1-9][0-9]*)");
+    var valueString = parser.regex("(0|[1-9][0-9]*)");
 
     if (parser.success()) {
       return parseInt(valueString);
     }
 
-    parser.refail("Expected an integer but got " + parser.excerpt());
-    return undefined;
-  }
-
-  // Parses a letter.
-  module.letter = function(parser) {
-    if (parser.failure()) return undefined;
-
-    var char = parser.regex("[a-zA-Z]");
-
-    if (parser.success()) {
-      return char;
-    }
-
-    parser.refail("Expected alphanumeric character, but got '" + parser.excerpt() + "'");
-
+    parser.refail("Expected integer"); 
     return undefined;
   }
 
   // Builds a function which takes a parser and parses multiple instances of one
   // rule, with an optional required count.
-  module.many = function (parserFunc, atLeast) {
+  module.many = function (parserFunc) {
     var builtFunction = function(parser) {
       if (parser.failure()) return undefined;
       var results = [];
@@ -126,10 +79,6 @@ var Parleur = (function() {
         }
 
         results.push(result);
-      }
-
-      if (atLeast != undefined && results.length < atLeast) {
-        parser.fail("Expected at least " + atLeast + " of <something>" + "(use refail to provide a more meaningful error message).");
       }
 
       return results;
@@ -148,7 +97,7 @@ var Parleur = (function() {
       return result;
     }
 
-    parser.refail(parser.expected("space"));
+    parser.refail("Expected newline");
   }
 
   // Builds a function which takes a parser, and parses one of several
@@ -180,7 +129,7 @@ var Parleur = (function() {
       }
 
       parser.error = topError;
-      parser.fail("Error while in parser.oneOf (use refail to provide a more meaningful error message).");
+      parser.fail("Error while in oneOf (use refail to provide a more meaningful error message)");
       return undefined;
     }
   }
@@ -203,22 +152,6 @@ var Parleur = (function() {
     return builtRule;
   };
 
-  // Parses zero or more space characters.
-  module.optionalSpace = function(parser) {
-    if (parser.failure()) return;
-
-    var result = parser.regex(" *");
-    return result;
-  }
-
-  // Parses zero or more whitespace characters (space, tab, newline).
-  module.optionalWhitespace = function(parser) {
-    if (parser.failure()) return;
-
-    var result = parser.regex("( |\t|\n|\r)*");
-    return result;
-  }
-
   // Builds a function which takes a parser, and parses and returns a match for
   // the given regular expression pattern.
   module.regex = function(pattern) {
@@ -234,7 +167,7 @@ var Parleur = (function() {
       var matches = regex.exec(current);
 
       if (matches == null) {
-        parser.fail("Expected a match for the regular expression '" + pattern + "' but got " + parser.excerpt());
+        parser.fail("Expected a match for the regular expression '" + pattern + "'"); 
         return undefined;
       }
 
@@ -246,14 +179,12 @@ var Parleur = (function() {
   }
 
   // Many instances of one rule separated by a string.
-  module.separated = function(separator, atLeast, rule) {
+  module.separated = function(separatorRule, rule) {
     var builtRule = function(parser) {
       if (parser.failure()) return undefined;
 
       var ruleWithSeparator = function(innerParser) {
-        innerParser.optionalWhitespace();
-        innerParser.string(separator);
-        innerParser.optionalWhitespace();
+        separatorRule(innerParser);
         var result = rule(innerParser);
         return result;
       };
@@ -267,13 +198,8 @@ var Parleur = (function() {
         results = results.concat(tail);
       }
 
-      if (results.length < atLeast) {
-        parser.fail("Expected at least " + atLeast + " of <something> (use refail to provide a more meaningful error message).")
-      }
-
-      // Possibly `head` failed, if it's OK to parse zero instances, we should
-      // not fail.
-      if (parser.failure() && atLeast <= 0) {
+      // Possibly `head` failed, then we should just return an empty list.
+      if (parser.failure()) {
         parser.error = undefined;
       }
 
@@ -294,24 +220,10 @@ var Parleur = (function() {
         return string;
       }
 
-      parser.fail("Expected '" + string + "' but got " + parser.excerpt());
+      parser.fail("Expected '" + string + "'");
 
       return undefined;
     }
-  }
-
-  // Parses a word (a sequence of letters).
-  module.word = function(parser) {
-    if (parser.failure()) return;
-
-    var result = parser.regex("[a-zA-Z]+");
-
-    if (parser.success()) {
-      return result;
-    }
-
-    parser.refail("Expected a word");
-    return undefined;
   }
 
   // Parses one or more whitespace characters (space, tab, newline).
@@ -324,7 +236,7 @@ var Parleur = (function() {
       return result;
     }
 
-    parser.refail(parser.expected("whitespace"));
+    parser.refail("Expected whitespace");
   }
 
   // Parses one or more space characters.
@@ -337,8 +249,10 @@ var Parleur = (function() {
       return result;
     }
 
-    parser.refail(parser.expected("space"));
+    parser.refail("Expected space");
   }
+
+  // ---- ---- PARSER PROTOTYPE DEFINITION ---- ---- //
 
   // Constructor for Parser object, takes the text to parse.
   module.Parser = function(text) {
@@ -348,19 +262,9 @@ var Parleur = (function() {
     this.excerptLength = 12;
   };
 
-  // Parses any character.
-  module.Parser.prototype.char = function() {
-    return module.char(this);
-  }
-
   // Parses a rule delimited by begin and end strings (such as parentheses).
-  module.Parser.prototype.delimited = function(begin, end, rule) {
-    return module.delimited(begin, end, rule)(this);
-  }
-
-  // Parses a single digit.
-  module.Parser.prototype.digit = function() {
-    return module.digit(this);
+  module.Parser.prototype.delimited = function(beginRule, endRule, rule) {
+    return module.delimited(beginRule, endRule, rule)(this);
   }
 
   // Returns the text to parse, starting from the current position.
@@ -394,26 +298,6 @@ var Parleur = (function() {
     return message;
   }
 
-  // Gets an excerpt of the text at the current position for building
-  // error messages.
-  module.Parser.prototype.excerpt = function() {
-    var current = this.current();
-
-    if (current.length == 0) {
-      return "end of text";
-    }
-
-    if (current.length < this.excerptLength) {
-      return "'" + current + "'";
-    }
-
-    return "'" + current.substr(0, this.excerptLength) + " ...'";
-  };
-
-  module.Parser.prototype.expected = function(name) {
-    return "Expected " + name + " but got " + this.excerpt();
-  }
-
   // Signals that a parser error has occured, chaining the new error.
   module.Parser.prototype.fail = function(message) {
     if (this.error == undefined) {
@@ -437,24 +321,24 @@ var Parleur = (function() {
     return this.error != undefined;
   };
 
-  // Parses a float, either positive or nigtave, posiibly with an exponent.
+  // Parses a floating point number.
   module.Parser.prototype.float = function() {
     return module.float(this);
   }
 
-  // Parses an integer, either positive or negative.
+  // Parses an integer.
   module.Parser.prototype.int = function() {
     return module.int(this);
   }
 
-  // Parses a single letter.
-  module.Parser.prototype.letter = function() {
-    return module.letter(this);
+  // Parses a newline character.
+  module.Parser.prototype.newline = function() {
+    return module.newline(this);
   }
 
   // Parses many instances of a rule, with an optional minimal amount.
-  module.Parser.prototype.many = function(rule, atLeast) {
-    return module.many(rule, atLeast)(this);
+  module.Parser.prototype.many = function(rule) {
+    return module.many(rule)(this);
   }
 
   // Parses one of several possibilities returning the result of the 
@@ -496,8 +380,8 @@ var Parleur = (function() {
   }
 
   // Many instances of one rule separated by a string.
-  module.Parser.prototype.separated = function(separator, atLeast, rule) {
-    return module.separated(separator, atLeast, rule)(this);
+  module.Parser.prototype.separated = function(separator, rule) {
+    return module.separated(separator, rule)(this);
   }
 
   // Parses and returns the given string.
