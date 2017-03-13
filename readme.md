@@ -42,10 +42,10 @@ should still explain them though:
 
 * `parser.string("var")` parses the exact string *"var"* and returns the result.
 * `parser.space()` parses one or more space characters.
-* `parser.regex("[a-zA-Z+]")` parses a match for the pattern *[a-zA-Z+]* -- the
+* `parser.regex("[a-zA-Z]+")` parses a match for the pattern *[a-zA-Z+]* -- the
     name of our variable.
 * `parser.int()` parses a positive integer.
-* `parser.end()` parses nothing, but check that there is no more text left to
+* `parser.end()` parses nothing, but checks that there is no more text left to
     parse.
 
 If everything went well then we should have `name = "foo"` and `value = 42`. If
