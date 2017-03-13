@@ -378,16 +378,6 @@ var Parleur = (function() {
     return module.optional(rule)(this);
   }
 
-  // Parses zero or more space characters. 
-  module.Parser.prototype.optionalSpace = function() {
-    return module.optionalSpace(this);
-  }
-
-  // Parses zero or more white space characters (space, tab, newline).
-  module.Parser.prototype.optionalWhitespace = function() {
-    return module.optionalWhitespace(this);
-  }
-
   // Replaces the message of the topmost error.
   module.Parser.prototype.refail = function(message) {
     if (this.error == undefined) {
