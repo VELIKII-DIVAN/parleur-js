@@ -5,7 +5,6 @@ Parser = function(text) {
   this.text = text;
   this.position = 0;
   this.error = undefined;
-  this.excerptLength = 12;
 };
 
 Parser.prototype.chain = function(rules) {
@@ -36,16 +35,32 @@ Parser.prototype.errorMessage = function() {
     message += error.message;
     
     if (error.innerError == undefined) {
-      message += " (column " + error.position + ")";
+      message += ' (column ' + error.position + ')';
       break;
     }
     else {
-      message += ":\n";
+      message += ':\n';
       error = error.innerError;
     }
   }
 
   return message;
+}
+
+// Returns an excerpt of the current text with the given length.
+Parser.prototype.excerpt = function(length) {
+  var text = this.current();
+
+  if (text.length < length) {
+    return text;
+  }
+
+  return text.substr(0, 4) + " ...";
+}
+
+// Makes a string of the format 'Unexpected '<text> ...' (expected name)'
+Parser.prototype.expected = function(name) {
+  return 'Unexpected \'' + this.excerpt(4) + '\' (expected ' + name + ')';
 }
 
 // Signals that a parser error has occured, chaining the new error.

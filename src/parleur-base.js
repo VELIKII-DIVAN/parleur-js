@@ -49,7 +49,7 @@ end = function(parser) {
     return;
   }
   
-  parser.fail("Expected end of text");
+  parser.fail(parser.expected('end of text'));
   return undefined;
 }
 
@@ -57,13 +57,13 @@ end = function(parser) {
 float = function(parser) {
   if (parser.failure()) return undefined;
 
-  var valueString = parser.regex("(0|[1-9][0-9]*)(\\.[0-9]+)?(e(0|[1-9][0-9]+))?");
+  var valueString = parser.regex('(0|[1-9][0-9]*)(\\.[0-9]+)?(e(0|[1-9][0-9]+))?');
 
   if (parser.success()) {
     return parseFloat(valueString);
   }
 
-  parser.refail("Expected float");
+  parser.refail(parser.expected('float'));
   return undefined;
 }
 
@@ -71,13 +71,13 @@ float = function(parser) {
 int = function(parser) {
   if (parser.failure()) return undefined;
 
-  var valueString = parser.regex("(0|[1-9][0-9]*)");
+  var valueString = parser.regex('(0|[1-9][0-9]*)');
 
   if (parser.success()) {
     return parseInt(valueString);
   }
 
-  parser.refail("Expected integer"); 
+  parser.refail(parser.expected('integer'));
   return undefined;
 }
 
@@ -109,13 +109,13 @@ many = function (parserFunc) {
 newline = function(parser) {
   if (parser.failure()) return;
 
-  var result = parser.regex("(\n|\r\n)+");
+  var result = parser.regex('(\n|\r\n)+');
 
   if (parser.success()) {
     return result;
   }
 
-  parser.refail("Expected newline");
+  parser.refail(parser.expected('newline'));
 }
 
 // Builds a function which takes a parser, and parses one of several
@@ -147,7 +147,7 @@ oneOf = function(possibilities) {
     }
 
     parser.error = topError;
-    parser.fail("Error while in oneOf (use refail to provide a more meaningful error message)");
+    parser.fail('Error while in oneOf (use refail to provide a more meaningful error message)');
     return undefined;
   }
 }
@@ -176,8 +176,8 @@ regex = function(pattern) {
   return function(parser) {
     if (parser.failure()) return undefined;
 
-    if (!pattern.startsWith("^")) {
-      pattern = "^" + pattern;
+    if (!pattern.startsWith('^')) {
+      pattern = '^' + pattern;
     }
 
     var regex = new RegExp(pattern);
@@ -185,7 +185,7 @@ regex = function(pattern) {
     var matches = regex.exec(current);
 
     if (matches == null) {
-      parser.fail("Expected a match for the regular expression '" + pattern + "'"); 
+      parser.fail(parser.expected('a match for the pattern ' + pattern)); 
       return undefined;
     }
 
@@ -237,7 +237,7 @@ space = function(parser) {
     return result;
   }
 
-  parser.refail("Expected space");
+  parser.refail(parser.expected('space'));
 }
 
 // Builds a function which takes a parser, and parses and returns the given
@@ -251,7 +251,7 @@ string = function(string) {
       return string;
     }
 
-    parser.fail("Expected '" + string + "'");
+    parser.fail(parser.expected('\'' + string + '\''));
 
     return undefined;
   }
@@ -261,13 +261,13 @@ string = function(string) {
 whitespace = function(parser) {
   if (parser.failure()) return;
 
-  var result = parser.regex("( |\t|\n|\r)+");
+  var result = parser.regex('( |\t|\n|\r)+');
 
   if (parser.success()) {
     return result;
   }
 
-  parser.refail("Expected whitespace");
+  parser.refail(parser.expected('whitespace'));
 }
 
 module.exports.chain = chain;
