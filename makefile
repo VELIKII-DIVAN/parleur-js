@@ -1,5 +1,5 @@
 distdir=dist
-source=src/parleur-object.js
+source=src/index.js
 packed=dist/parleur.pack.js
 minified=dist/parleur.min.js
 
