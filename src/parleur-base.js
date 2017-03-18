@@ -1,5 +1,4 @@
-// ---- ---- MODULE LEVEL PARSER FUNCTIONS ---- ---- //
-
+// Runs a list of rules in sequence, returning a list of the results.
 chain = function(rules) {
   var builtRule = function(parser) {
     if (parser.failure()) return undefined;
