@@ -16,6 +16,9 @@ $(distdir):
 
 .PHONY: clean publish test
 
+publish: distributable
+	npm publish
+
 test:
 	./node_modules/mocha/bin/mocha "test/*.js"
 
