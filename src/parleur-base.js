@@ -125,6 +125,7 @@ oneOf = function(possibilities) {
   return function(parser) {
     if (parser.failure()) return undefined;
 
+    var startPos = parser.position;
     var topError = undefined;
 
     for (var i = 0; i < possibilities.length; i++) {
@@ -142,6 +143,7 @@ oneOf = function(possibilities) {
         topError = parser.error;
       }
 
+      parser.position = startPos;
       parser.error = undefined;
     }
 
