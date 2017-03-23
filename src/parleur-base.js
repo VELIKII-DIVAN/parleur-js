@@ -1,3 +1,32 @@
+// Parses at least `count` instances of `rule`.
+atLeast = function(count, rule) {
+  var builtRule = function(parser) {
+    if (parser.failure()) return undefined;
+    var results = [];
+
+    while (true) {
+      var position = parser.position;
+      var result = rule(parser);
+      
+      if (parser.failure()) {
+        parser.position = position;
+        break;
+      }
+
+      results.push(result);
+    }
+
+    if (results.length < count) {
+      return undefined;
+    }
+
+    parser.error = undefined;
+    return results;
+  };
+
+  return builtRule;
+}
+
 // Runs a list of rules in sequence, returning a list of the results.
 chain = function(rules) {
   var builtRule = function(parser) {
@@ -88,9 +117,11 @@ many = function (parserFunc) {
     var results = [];
 
     while (true) {
+      var position = parser.position;
       var result = parserFunc(parser);
       
       if (parser.failure()) {
+        parser.position = position;
         parser.error = undefined;
         break;
       }
@@ -271,6 +302,7 @@ whitespace = function(parser) {
   parser.refail(parser.expected('whitespace'));
 }
 
+module.exports.atLeast = atLeast;
 module.exports.chain = chain;
 module.exports.delimited = delimited;
 module.exports.end = end;

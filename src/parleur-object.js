@@ -7,6 +7,12 @@ Parser = function(text) {
   this.error = undefined;
 };
 
+// Parses at least `count` instances of `rule`.
+Parser.prototype.atLeast = function(count, rule) {
+  return Parleur.atLeast(count, rule)(this);
+}
+
+// Parses multiple rules in sequence.
 Parser.prototype.chain = function(rules) {
   return Parleur.chain(rules)(this);
 }
@@ -51,7 +57,7 @@ Parser.prototype.errorMessage = function() {
 Parser.prototype.excerpt = function(length) {
   var text = this.current();
 
-  if (text.length < length) {
+  if (text.length <= length) {
     return text;
   }
 
