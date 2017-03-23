@@ -12,8 +12,8 @@ describe('atLeast', function() {
   });
 
   it('should fail on no elements', function() {
-    var parser = new Parleur.Parser("oboy");
-    parser.atLeast(1, Parleur.int);
+    var parser = new Parleur.Parser("  oboy");
+    parser.atLeast(2, Parleur.int);
     parser.end();
     assert(parser.failure());
   });

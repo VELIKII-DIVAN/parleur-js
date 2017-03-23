@@ -17,6 +17,7 @@ atLeast = function(count, rule) {
     }
 
     if (results.length < count) {
+      parser.addFail('Expected at least ' + count + ' of <something> (use refail to provide a more meaningful error message)');
       return undefined;
     }
 
@@ -179,7 +180,7 @@ oneOf = function(possibilities) {
     }
 
     parser.error = topError;
-    parser.fail('Error while in oneOf (use refail to provide a more meaningful error message)');
+    parser.addFail('Error while in oneOf (use refail to provide a more meaningful error message)');
     return undefined;
   }
 }

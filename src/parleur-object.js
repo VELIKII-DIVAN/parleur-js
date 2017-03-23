@@ -41,7 +41,9 @@ Parser.prototype.errorMessage = function() {
     message += error.message;
     
     if (error.innerError == undefined) {
-      message += ' (column ' + error.position + ')';
+      var lines = this.text.substr(0, this.position).split(/\r\n|\r|\n/);
+      var col = lines[lines.length - 1].length;
+      message += ' (line ' + lines.length + ', col ' + error.position + ')';
       break;
     }
     else {
@@ -69,6 +71,17 @@ Parser.prototype.expected = function(name) {
   return 'Unexpected \'' + this.excerpt(4) + '\' (expected ' + name + ')';
 }
 
+// Adds context to a previous error.
+Parser.prototype.addFail = function(message) {
+  if (this.error != undefined) {
+    this.error = {
+      message: message,
+      position: this.position,
+      innerError: this.error
+    };
+  }
+};
+
 // Signals that a parser error has occured, chaining the new error.
 Parser.prototype.fail = function(message) {
   if (this.error == undefined) {
@@ -76,13 +89,6 @@ Parser.prototype.fail = function(message) {
       message: message,
       position: this.position,
       innerError: undefined
-    };
-  }
-  else {
-    this.error = {
-      message: message,
-      position: this.position,
-      innerError: this.error
     };
   }
 };
@@ -124,15 +130,15 @@ Parser.prototype.optional = function(rule) {
   return Parleur.optional(rule)(this);
 }
 
-// Replaces the message of the topmost error.
+// Replaces the message of the topmost error, returns true if the
+// message was replaced.
 Parser.prototype.refail = function(message) {
-  if (this.error == undefined) {
-    return;
-  }
-  else {
+  if (this.error != undefined) {
     this.error.message = message;
-    this.error.innerError = undefined;
+    return true;
   }
+
+  return false;
 }
 
 // Parses and returns a match for the given regular expression pattern.
