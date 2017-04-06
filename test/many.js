@@ -1,7 +1,3 @@
-function manyPositiveTest() {
-  
-}
-
 var assert = require('assert');
 var Parleur = require("../src/index.js");
 

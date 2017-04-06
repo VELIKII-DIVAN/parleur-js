@@ -189,11 +189,13 @@ oneOf = function(possibilities) {
 optional = function(rule) {
   var builtRule = function(parser) {
     if (parser.failure()) return;
+    var position = parser.position;
 
     var result = rule(parser);
 
     if (parser.failure()) {
       parser.error = undefined;
+      parser.position = position;
       return undefined;
     }
 
